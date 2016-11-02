@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
             Button btn = createButton();
             final Class<? extends Activity> clazz = ACTIVITIES[i];
             btn.setOnClickListener(view -> goToActivity(clazz));
-            btn.setText(i + "、" + clazz.getSimpleName());
+            btn.setText((i + 1) + "、" + clazz.getSimpleName());
             container.addView(btn);
         }
     }
