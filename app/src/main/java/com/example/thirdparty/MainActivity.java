@@ -8,13 +8,24 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.example.thirdparty.hybrid.JSBridgeActivity;
+import com.example.thirdparty.hybrid.JSInterfaceActivity;
 import com.example.thirdparty.rxjava.RxJavaActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final Class<? extends Activity>[] ACTIVITIES = new Class[]{
-            RxJavaActivity.class
+    private static final Class<? extends BaseActivity>[] ACTIVITIES = new Class[]{
+            RxJavaActivity.class,
+            JSInterfaceActivity.class,
+            JSBridgeActivity.class
     };
+
+    private static final String[] ACTIVITIE_DESC = new String[]{
+            "RxJava + Retrofit + OKHttp Demo",
+            "HyBrid : JSInterface Demo",
+            "HyBrid : JSBridge Demo"
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,8 +36,9 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < ACTIVITIES.length; i++) {
             Button btn = createButton();
             final Class<? extends Activity> clazz = ACTIVITIES[i];
-            btn.setOnClickListener(view -> goToActivity(clazz));
-            btn.setText((i + 1) + "、" + clazz.getSimpleName());
+            final String title = ACTIVITIE_DESC[i];
+            btn.setOnClickListener(view -> goToActivity(clazz, title));
+            btn.setText((i + 1) + "、" + title);
             container.addView(btn);
         }
     }
@@ -39,9 +51,10 @@ public class MainActivity extends AppCompatActivity {
         return btn;
     }
 
-    private void goToActivity(Class<? extends Activity> clazz) {
+    private void goToActivity(Class<? extends Activity> clazz, String title) {
         Intent intent = new Intent();
         intent.setClass(MainActivity.this, clazz);
+        intent.putExtra(BaseActivity.NAME, title);
         startActivity(intent);
     }
 }

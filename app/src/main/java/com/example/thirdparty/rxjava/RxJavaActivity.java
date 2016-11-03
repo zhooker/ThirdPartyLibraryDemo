@@ -15,13 +15,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.thirdparty.BaseActivity;
 import com.example.thirdparty.MainActivity;
 import com.example.thirdparty.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RxJavaActivity extends AppCompatActivity implements RxJavaContacts.IView {
+public class RxJavaActivity extends BaseActivity implements RxJavaContacts.IView {
 
     private static final String TAG = "zhuangsj";
 
@@ -35,8 +36,6 @@ public class RxJavaActivity extends AppCompatActivity implements RxJavaContacts.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rx_java);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_rx_java_refresh);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -60,15 +59,6 @@ public class RxJavaActivity extends AppCompatActivity implements RxJavaContacts.
                 mPresenter.getData();
             }
         });
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
