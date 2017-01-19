@@ -23,6 +23,7 @@
         <activity android:name=".rxjava.RxJavaActivity" />
         <activity android:name=".hybrid.JSInterfaceActivity" />
         <activity android:name=".hybrid.JSBridgeActivity"/>
+        <activity android:name=".retrofit.download.RetrofitDownloadActivity"/>
     </application>
 
 </manifest>

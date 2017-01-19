@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 
 import com.example.thirdparty.hybrid.JSBridgeActivity;
 import com.example.thirdparty.hybrid.JSInterfaceActivity;
+import com.example.thirdparty.retrofit.download.RetrofitDownloadActivity;
 import com.example.thirdparty.rxjava.RxJavaActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -17,13 +18,15 @@ public class MainActivity extends AppCompatActivity {
     private static final Class<? extends BaseActivity>[] ACTIVITIES = new Class[]{
             RxJavaActivity.class,
             JSInterfaceActivity.class,
-            JSBridgeActivity.class
+            JSBridgeActivity.class,
+            RetrofitDownloadActivity.class
     };
 
     private static final String[] ACTIVITIE_DESC = new String[]{
             "RxJava + Retrofit + OKHttp Demo",
             "HyBrid : JSInterface Demo",
-            "HyBrid : JSBridge Demo"
+            "HyBrid : JSBridge Demo",
+            "Retrofit : Retrofit Download Demo"
     };
 
 
