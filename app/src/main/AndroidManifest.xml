@@ -21,6 +21,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".rxjava.RxJavaActivity" />
+        <activity android:name=".rxjava2.RxJava2Activity" />
         <activity android:name=".hybrid.JSInterfaceActivity" />
         <activity android:name=".hybrid.JSBridgeActivity"/>
         <activity android:name=".retrofit.download.RetrofitDownloadActivity"/>

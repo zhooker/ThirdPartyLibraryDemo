@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -76,6 +77,9 @@ public class RetrofitDownloadActivity extends BaseActivity {
             @Override
             public Observable<String> call(ResponseBody responseBody) {
                 return Observable.create(new Observable.OnSubscribe<String>() {
+
+
+
                     @Override
                     public void call(Subscriber<? super String> subscriber) {
                         // todo change the file location/name according to your needs
@@ -135,13 +139,16 @@ public class RetrofitDownloadActivity extends BaseActivity {
                 .sample(100, TimeUnit.MILLISECONDS)
 //                .onBackpressureDrop()
 //                .onBackpressureBuffer(1000)
-                .doOnRequest(new Action1<Long>() {
-            @Override
-            public void call(Long aLong) {
-                Log.d(TAG, "doOnRequest : " + aLong);
-                updateProcess("doOnRequest : " + aLong);
-            }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<String>() {
+//                .debounce(10, TimeUnit.MILLISECONDS)
+//                .buffer(500, TimeUnit.MILLISECONDS)
+                .map(new Func1<String, String>() {
+                    @Override
+                    public String call(String s) {
+
+                        return s;
+                    }
+                })
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<String>() {
             @Override
             public void onStart() {
 //                request(1);
@@ -160,9 +167,9 @@ public class RetrofitDownloadActivity extends BaseActivity {
 
             @Override
             public void onNext(String responseBody) {
-                updateProcess(responseBody);
+                updateProcess("" + responseBody);
                 Log.d(TAG, "responseBody=" + responseBody);
-//                request(100);
+//                request(1);
             }
         });
     }

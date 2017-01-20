@@ -12,11 +12,13 @@ import com.example.thirdparty.hybrid.JSBridgeActivity;
 import com.example.thirdparty.hybrid.JSInterfaceActivity;
 import com.example.thirdparty.retrofit.download.RetrofitDownloadActivity;
 import com.example.thirdparty.rxjava.RxJavaActivity;
+import com.example.thirdparty.rxjava2.RxJava2Activity;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final Class<? extends BaseActivity>[] ACTIVITIES = new Class[]{
             RxJavaActivity.class,
+            RxJava2Activity.class,
             JSInterfaceActivity.class,
             JSBridgeActivity.class,
             RetrofitDownloadActivity.class
@@ -24,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String[] ACTIVITIE_DESC = new String[]{
             "RxJava + Retrofit + OKHttp Demo",
+            "RxJava Demo : 常用API使用",
             "HyBrid : JSInterface Demo",
             "HyBrid : JSBridge Demo",
             "Retrofit : Retrofit Download Demo"
