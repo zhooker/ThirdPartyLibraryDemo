@@ -23,6 +23,7 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -36,12 +37,21 @@ public class RetrofitDownloadActivity extends BaseActivity {
     public static final String TAG = "zhuangsj";
 
     private TextView mProcess;
+    private Subscription mSubscription;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_retrofit_download);
         mProcess = (TextView) findViewById(R.id.process);
+    }
+
+    public void onPause(View v) {
+        if(mSubscription != null) {
+            mSubscription.unsubscribe();
+        }
     }
 
     public void onStart(View v) {
@@ -73,7 +83,7 @@ public class RetrofitDownloadActivity extends BaseActivity {
 
     public void download() {
         Observable<ResponseBody> call = createDownloadService();
-        call.flatMap(new Func1<ResponseBody, Observable<String>>() {
+        mSubscription = call.flatMap(new Func1<ResponseBody, Observable<String>>() {
             @Override
             public Observable<String> call(ResponseBody responseBody) {
                 return Observable.create(new Observable.OnSubscribe<String>() {
@@ -109,7 +119,7 @@ public class RetrofitDownloadActivity extends BaseActivity {
                                 fileSizeDownloaded += read;
 
                                 float progress = (fileSizeDownloaded * 100.0f / fileSize);
-                                Log.d(TAG, "file download  progress=" + progress);
+                                Log.d(TAG, "file download  progress=" + progress +",isUnsubscribed=" + subscriber.isUnsubscribed());
                                 subscriber.onNext(String.format("%.2f %%",progress));
                             }
 
@@ -119,6 +129,8 @@ public class RetrofitDownloadActivity extends BaseActivity {
                         } catch (IOException e) {
                             Log.d(TAG, "file download error: " + e);
                             subscriber.onError(e);
+                        } catch (Exception e) {
+                            Log.d(TAG, "file download error: " + e);
                         } finally {
                             try {
                                 if (inputStream != null) {
@@ -144,7 +156,7 @@ public class RetrofitDownloadActivity extends BaseActivity {
                 .map(new Func1<String, String>() {
                     @Override
                     public String call(String s) {
-
+                        Log.d(TAG, "file download  map   " + s);
                         return s;
                     }
                 })
