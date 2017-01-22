@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
@@ -12,7 +11,8 @@ import com.example.thirdparty.hybrid.JSBridgeActivity;
 import com.example.thirdparty.hybrid.JSInterfaceActivity;
 import com.example.thirdparty.retrofit.download.RetrofitDownloadActivity;
 import com.example.thirdparty.rxjava.RxJavaActivity;
-import com.example.thirdparty.rxjava2.RxJava2Activity;
+import com.example.thirdparty.rxjava.rxbus.RxBusActivity;
+import com.example.thirdparty.rxjava.rxjava2.RxJava2Activity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,7 +21,8 @@ public class MainActivity extends AppCompatActivity {
             RxJava2Activity.class,
             JSInterfaceActivity.class,
             JSBridgeActivity.class,
-            RetrofitDownloadActivity.class
+            RetrofitDownloadActivity.class,
+            RxBusActivity.class
     };
 
     private static final String[] ACTIVITIE_DESC = new String[]{
@@ -29,7 +30,8 @@ public class MainActivity extends AppCompatActivity {
             "RxJava Demo : 常用API使用",
             "HyBrid : JSInterface Demo",
             "HyBrid : JSBridge Demo",
-            "Retrofit : Retrofit Download Demo"
+            "Retrofit : Retrofit Download Demo",
+            "Rxjava : RxBus　Demo"
     };
 
 

@@ -1,7 +1,6 @@
-package com.example.thirdparty.rxjava2;
+package com.example.thirdparty.rxjava.rxjava2;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
