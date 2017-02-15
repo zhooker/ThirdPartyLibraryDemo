@@ -150,8 +150,18 @@ public class RxJava2Activity extends BaseActivity {
     private void testMerge() {
         // 不保存输入的顺序
         Observable.merge(
-                Observable.interval(250, TimeUnit.MILLISECONDS).map(i -> "First"),
-                Observable.interval(150, TimeUnit.MILLISECONDS).map(i -> "Second"))
+                Observable.interval(250, TimeUnit.MILLISECONDS).map(new Func1<Long, String>() {
+                    @Override
+                    public String call(Long aLong) {
+                        return "First";
+                    }
+                }),
+                Observable.interval(150, TimeUnit.MILLISECONDS).map(new Func1<Long, String>() {
+                    @Override
+                    public String call(Long aLong) {
+                        return "Second";
+                    }
+                }))
                 .take(10)
                 .subscribe(new Subscriber<String>() {
                     @Override

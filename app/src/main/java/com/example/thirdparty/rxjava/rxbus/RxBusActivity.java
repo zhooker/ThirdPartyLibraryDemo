@@ -10,6 +10,7 @@ import com.example.thirdparty.R;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action1;
+import rx.functions.Func1;
 
 public class RxBusActivity extends BaseActivity {
 
@@ -23,9 +24,12 @@ public class RxBusActivity extends BaseActivity {
 
     public void onStart(View v) {
         Observable<String> observable = Observable.just("Event")
-                .map(s -> {
-                    Log.e(TAG,"Expensive operation for " + s);
-                    return s;
+                .map(new Func1<String, String>() {
+                    @Override
+                    public String call(String s) {
+                        Log.e(TAG,"Expensive operation for " + s);
+                        return s;
+                    }
                 })
                 .publish()
 //                .refCount();
@@ -36,8 +40,20 @@ public class RxBusActivity extends BaseActivity {
                     }
                 });
 
-        observable.subscribe(s -> Log.e(TAG,"Sub1 got: " + s));
-        observable.subscribe(s -> Log.e(TAG,"Sub2 got: " + s));
+//        observable.subscribe(s -> Log.e(TAG,"Sub1 got: " + s));
+//        observable.subscribe(s -> Log.e(TAG,"Sub2 got: " + s));
+        observable.subscribe(new Action1<String>() {
+            @Override
+            public void call(String s) {
+                Log.e(TAG,"Sub1 got: " + s);
+            }
+        });
+        observable.subscribe(new Action1<String>() {
+            @Override
+            public void call(String s) {
+                Log.e(TAG,"Sub2 got: " + s);
+            }
+        });
     }
 
     public void onPause(View v) {

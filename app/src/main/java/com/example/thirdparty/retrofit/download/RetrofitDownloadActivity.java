@@ -85,7 +85,7 @@ public class RetrofitDownloadActivity extends BaseActivity {
         Observable<ResponseBody> call = createDownloadService();
         mSubscription = call.flatMap(new Func1<ResponseBody, Observable<String>>() {
             @Override
-            public Observable<String> call(ResponseBody responseBody) {
+            public Observable<String> call(final ResponseBody responseBody) {
                 return Observable.create(new Observable.OnSubscribe<String>() {
 
 
