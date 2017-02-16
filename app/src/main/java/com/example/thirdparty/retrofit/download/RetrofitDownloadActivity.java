@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.thirdparty.BaseActivity;
+import com.example.thirdparty.BaseLogActivity;
 import com.example.thirdparty.R;
 
 import java.io.File;
@@ -32,52 +33,41 @@ import rx.schedulers.Schedulers;
 /**
  * 原文［Retrofit 2 - 如何从服务器下载文件］（http://www.jianshu.com/p/92bb85fc07e8#）
  */
-public class RetrofitDownloadActivity extends BaseActivity {
+public class RetrofitDownloadActivity extends BaseLogActivity {
 
-    public static final String TAG = "zhuangsj";
-
-    private TextView mProcess;
     private Subscription mSubscription;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_retrofit_download);
-        mProcess = (TextView) findViewById(R.id.process);
+        addActionButton("download", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearProcess();
+                download();
+            }
+        });
+
+        addActionButton("pause", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mSubscription != null) {
+                    mSubscription.unsubscribe();
+                }
+            }
+        });
     }
 
-    public void onPause(View v) {
-        if(mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
-    }
-
-    public void onStart(View v) {
-        clearProcess();
-        download();
-    }
-
-
-    private void updateProcess(String process) {
-        String origin = mProcess.getText().toString();
-        mProcess.setText(process + "\n" + origin);
-    }
-
-    private void clearProcess() {
-        mProcess.setText("");
-    }
 
     public Observable<ResponseBody> createDownloadService() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("http://dl.gionee.com")
+        Retrofit retrofit = new Retrofit.Builder().baseUrl("http://www.qq.com")
                 .client(builder.build())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .build();
         PluginApkModle pluginModle = retrofit.create(PluginApkModle.class);
-        return pluginModle.downloadFileWithDynamicUrlAsync("http://dl.gionee.com/synth/res/plugin/3/SmartBurst_V1.1.0.j.apk");
+        return pluginModle.downloadFileWithDynamicUrlAsync("http://66ddx.pc6.com/wwb3/QQ8920026.zip");
     }
 
 
@@ -119,7 +109,7 @@ public class RetrofitDownloadActivity extends BaseActivity {
                                 fileSizeDownloaded += read;
 
                                 float progress = (fileSizeDownloaded * 100.0f / fileSize);
-                                Log.d(TAG, "file download  progress=" + progress +",isUnsubscribed=" + subscriber.isUnsubscribed());
+                                updateProcess("file download  progress=" + progress +",isUnsubscribed=" + subscriber.isUnsubscribed());
                                 subscriber.onNext(String.format("%.2f %%",progress));
                             }
 
@@ -127,10 +117,10 @@ public class RetrofitDownloadActivity extends BaseActivity {
 
                             subscriber.onCompleted();
                         } catch (IOException e) {
-                            Log.d(TAG, "file download error: " + e);
+                            updateProcess("file download error: " + e);
                             subscriber.onError(e);
                         } catch (Exception e) {
-                            Log.d(TAG, "file download error: " + e);
+                            updateProcess("file download error: " + e);
                         } finally {
                             try {
                                 if (inputStream != null) {
@@ -156,7 +146,7 @@ public class RetrofitDownloadActivity extends BaseActivity {
                 .map(new Func1<String, String>() {
                     @Override
                     public String call(String s) {
-                        Log.d(TAG, "file download  map   " + s);
+                        updateProcess("file download  map   " + s);
                         return s;
                     }
                 })

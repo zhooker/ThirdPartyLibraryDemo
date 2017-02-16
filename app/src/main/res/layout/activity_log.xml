@@ -9,26 +9,14 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".rxjava.rxjava2.RxJava2Activity">
+    tools:context=".rxjava.rxjava2.RxJavaAPIActivity">
 
 
-    <LinearLayout
+    <com.example.thirdparty.view.AutoNewLineLinearLayout
+        android:id="@+id/btn_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onStart"
-            android:text="开始下载" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onPause"
-            android:text="暂停" />
-    </LinearLayout>
+        android:orientation="horizontal"/>
 
     <ScrollView
         android:layout_width="match_parent"

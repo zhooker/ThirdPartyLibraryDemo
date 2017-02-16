@@ -24,7 +24,7 @@ android {
     }
     buildTypes {
         debug {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
         }
@@ -42,9 +42,6 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
     compile 'com.android.support:appcompat-v7:24.0.0'
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:recyclerview-v7:24.0.0'
@@ -58,4 +55,7 @@ dependencies {
     compile 'com.squareup.okhttp3:logging-interceptor:3.3.0'
     //image
     compile 'com.github.bumptech.glide:glide:3.7.0'
+    // permission
+    compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
+    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.9.1@aar'
 }

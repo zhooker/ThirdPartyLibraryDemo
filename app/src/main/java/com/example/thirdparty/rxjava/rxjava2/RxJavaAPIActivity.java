@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.thirdparty.BaseActivity;
+import com.example.thirdparty.BaseLogActivity;
 import com.example.thirdparty.R;
 
 import java.util.concurrent.TimeUnit;
@@ -15,30 +16,55 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
-public class RxJava2Activity extends BaseActivity {
-    public static final String TAG = "zhuangsj";
-    private TextView mProcess;
+public class RxJavaAPIActivity extends BaseLogActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rx_java2);
-        mProcess = (TextView) findViewById(R.id.process);
-    }
 
-    private void updateProcess(String process) {
-        String origin = mProcess.getText().toString();
-        mProcess.setText(process + "\n" + origin);
-    }
+        addActionButton("concat", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearProcess();
+                testConcat();
+            }
+        });
 
-    private void clearProcess() {
-        mProcess.setText("");
-    }
+        addActionButton("amb", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearProcess();
+                testAmb();
+            }
+        });
 
-    public void onStart(View v) {
-        testDeBounce();
+        addActionButton("merge", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearProcess();
+                testMerge();
+            }
+        });
+
+        addActionButton("retry/retryWhen", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearProcess();
+                testRetry();
+            }
+        });
+
+        addActionButton("debounce", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearProcess();
+                testDeBounce();
+            }
+        });
     }
 
     private void testConcat() {
@@ -46,6 +72,7 @@ public class RxJava2Activity extends BaseActivity {
         final Observable<String> memory = Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
+                updateProcess("memory　begin ... ");
                 try {
                     Thread.sleep(2000);
                 } catch (Exception e) {
@@ -58,6 +85,7 @@ public class RxJava2Activity extends BaseActivity {
         Observable<String> disk = Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
+                updateProcess("disk  begin ... ");
                 try {
                     Thread.sleep(1000);
                 } catch (Exception e) {
@@ -79,20 +107,20 @@ public class RxJava2Activity extends BaseActivity {
                         return s != null;
                     }
                 })
-                .subscribeOn(Schedulers.newThread()).subscribe(new Subscriber<String>() {
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<String>() {
             @Override
             public void onCompleted() {
-                Log.d(TAG, "onCompleted: ");
+                updateProcess("onCompleted: ");
             }
 
             @Override
             public void onError(Throwable e) {
-                Log.d(TAG, "onError: " + e);
+                updateProcess("onError: " + e);
             }
 
             @Override
             public void onNext(String s) {
-                Log.d(TAG, "onNext: " + s);
+                updateProcess("onNext: " + s);
             }
         });
     }
@@ -129,26 +157,26 @@ public class RxJava2Activity extends BaseActivity {
         });
 
         Observable.amb(memory, disk)
-                .subscribeOn(Schedulers.newThread()).subscribe(new Subscriber<String>() {
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<String>() {
             @Override
             public void onCompleted() {
-                Log.d(TAG, "onCompleted: ");
+                updateProcess("onCompleted: ");
             }
 
             @Override
             public void onError(Throwable e) {
-                Log.d(TAG, "onError: " + e);
+                updateProcess("onError: " + e);
             }
 
             @Override
             public void onNext(String s) {
-                Log.d(TAG, "onNext: " + s);
+                updateProcess("onNext: " + s);
             }
         });
     }
 
     private void testMerge() {
-        // 不保存输入的顺序
+        // 不保证输入的顺序
         Observable.merge(
                 Observable.interval(250, TimeUnit.MILLISECONDS).map(new Func1<Long, String>() {
                     @Override
@@ -163,20 +191,21 @@ public class RxJava2Activity extends BaseActivity {
                     }
                 }))
                 .take(10)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<String>() {
                     @Override
                     public void onCompleted() {
-                        Log.d(TAG, "onCompleted: ");
+                        updateProcess("onCompleted: ");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(TAG, "onError: " + e);
+                        updateProcess("onError: " + e);
                     }
 
                     @Override
                     public void onNext(String s) {
-                        Log.d(TAG, "onNext: " + s);
+                        updateProcess("onNext: " + s);
                     }
                 });
 
@@ -193,42 +222,41 @@ public class RxJava2Activity extends BaseActivity {
                     } catch (Exception e) {
 
                     }
-                    Log.d(TAG, "create: " + i);
+                    updateProcess("create: " + i);
                     if (i < 5)
                         subscriber.onNext("data " + i);
                     else
                         subscriber.onError(new IllegalArgumentException("error " + i));
                 }
-                Log.d(TAG, "create end");
+                updateProcess("create end");
                 subscriber.onCompleted();
             }
         }).retryWhen(new Func1<Observable<? extends Throwable>, Observable<?>>() {
             @Override
             public Observable<?> call(Observable<? extends Throwable> observable) {
-                return observable;
+                return observable.zipWith(Observable.range(1, 3), new Func2<Throwable, Integer, Object>() {
+                    @Override
+                    public Object call(Throwable throwable, Integer integer) {
+                        return integer;
+                    }
+                }).delay(1, TimeUnit.SECONDS);
             }
         })
-//                .repeatWhen(new Func1<Observable<? extends Void>, Observable<?>>() {
-//            @Override
-//            public Observable<?> call(Observable<? extends Void> observable) {
-//                Log.d(TAG, "repeatWhen... "+observable);
-//                return observable.zipWith(Observable.range(1, 3), (n, i) -> i).delay(2, TimeUnit.SECONDS);
-//            }
-//        })
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<String>() {
                     @Override
                     public void onCompleted() {
-                        Log.d(TAG, "onCompleted: ");
+                        updateProcess("onCompleted: ");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(TAG, "onError: " + e);
+                        updateProcess("onError: " + e);
                     }
 
                     @Override
                     public void onNext(String s) {
-                        Log.d(TAG, "onNext: " + s);
+                        updateProcess("onNext: " + s);
                     }
                 });
     }
@@ -249,26 +277,26 @@ public class RxJava2Activity extends BaseActivity {
                     } catch (Exception e) {
 
                     }
-                    Log.d(TAG, "create: " + i);
+                    updateProcess("create: " + i);
                     subscriber.onNext("data " + i);
                 }
-                Log.d(TAG, "create end " + subscriber.isUnsubscribed() + "," + Thread.currentThread().getName());
+                updateProcess("create end " + subscriber.isUnsubscribed() + "," + Thread.currentThread().getName());
                 subscriber.onCompleted();
             }
         }).debounce(600, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<String>() {
             @Override
             public void onCompleted() {
-                Log.d(TAG, "onCompleted: ");
+                updateProcess("onCompleted: ");
             }
 
             @Override
             public void onError(Throwable e) {
-                Log.d(TAG, "onError: " + e);
+                updateProcess("onError: " + e);
             }
 
             @Override
             public void onNext(String s) {
-                Log.d(TAG, "onNext: " + s);
+                updateProcess("onNext: " + s);
             }
         });
     }

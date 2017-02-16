@@ -10,13 +10,12 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.thirdparty.MainActivity">
-    RxJavaActivity.class,
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:gravity="center_horizontal"
-        android:text="Hello World!" />
+        android:text="第三方库使用Demo" />
 
     <ScrollView
         android:layout_width="match_parent"
