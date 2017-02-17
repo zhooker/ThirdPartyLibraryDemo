@@ -8,6 +8,12 @@
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1, target-densitydpi=medium-dpi, user-scalable=no">
     <meta property="og:site_name" content="JsBridge"/>
     <script src="file:///android_asset/RainbowBridge.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        function updateProgress(progress) {
+            var node = document.getElementById("progress");
+            node.innerHTML=progress;
+        };
+    </script>
 
     <style>
         .entry{
@@ -118,6 +124,16 @@
             RainbowBridge.callMethod('JsInvokeJavaScope','finish',{},function(msg){alert(JSON.stringify(msg))});
         </div>
         <button onclick="RainbowBridge.callMethod('JsInvokeJavaScope','finish',{},function(msg){alert(JSON.stringify(msg))});">
+            测试
+        </button>
+    </li>
+    <li>
+        进度条刷新<br/>
+        <a href="http://www.baidu.com/" id="progress" >呵呵</a>
+        <div>
+            RainbowBridge.callMethod('JsInvokeJavaScope','finish',{},function(msg){alert(JSON.stringify(msg))});
+        </div>
+        <button onclick="RainbowBridge.callMethod('JsInvokeJavaScope','updateProgress',{},function(msg){updateProgress(JSON.stringify(msg))});">
             测试
         </button>
     </li>

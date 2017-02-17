@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.webkit.WebView;
@@ -113,4 +114,26 @@ public class JsInvokeJavaScope {
         });
     }
 
+    public static void updateProgress(final WebView webView, JSONObject data, final JsCallback callback) {
+        final Handler mHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                webView.loadUrl("javascript:updateProgress(" + (msg.what + 1) + ");");
+            }
+        };
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < 100; i++) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    mHandler.sendEmptyMessage(i);
+                }
+            }
+        }).start();
+    }
 }

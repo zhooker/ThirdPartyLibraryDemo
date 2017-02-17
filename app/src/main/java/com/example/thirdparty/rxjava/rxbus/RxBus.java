@@ -1,6 +1,10 @@
 package com.example.thirdparty.rxjava.rxbus;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import rx.Observable;
+import rx.Subscriber;
 import rx.subjects.PublishSubject;
 import rx.subjects.SerializedSubject;
 import rx.subjects.Subject;
@@ -10,57 +14,111 @@ import rx.subjects.Subject;
  * 参考 : https://lingyunzhu.github.io/2016/03/01/RxBus%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8F%8A%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/
  */
 public class RxBus {
+    private static volatile RxBus mDefaultInstance;
+    private final Subject<Object, Object> mBus;
 
-    private static volatile RxBus mInstance;
-
-    private final Subject bus;
-
+    private final Map<Class<?>, Object> mStickyEventMap;
 
     public RxBus() {
-        bus = new SerializedSubject<>(PublishSubject.create());
+        mBus = new SerializedSubject<>(PublishSubject.create());
+        mStickyEventMap = new ConcurrentHashMap<>();
     }
 
-    /**
-     * 单例模式RxBus
-     *
-     * @return
-     */
     public static RxBus getInstance() {
-
-        RxBus rxBus2 = mInstance;
-        if (mInstance == null) {
+        if (mDefaultInstance == null) {
             synchronized (RxBus.class) {
-                rxBus2 = mInstance;
-                if (mInstance == null) {
-                    rxBus2 = new RxBus();
-                    mInstance = rxBus2;
+                if (mDefaultInstance == null) {
+                    mDefaultInstance = new RxBus();
                 }
             }
         }
-
-        return rxBus2;
+        return mDefaultInstance;
     }
 
-
     /**
-     * 发送消息
-     *
-     * @param object
+     * 发送事件
      */
-    public void post(Object object) {
-
-        bus.onNext(object);
-
+    public void post(Object event) {
+        mBus.onNext(event);
     }
 
     /**
-     * 接收消息
-     *
-     * @param eventType
-     * @param <T>
-     * @return
+     * 根据传递的 eventType 类型返回特定类型(eventType)的 被观察者
      */
     public <T> Observable<T> toObserverable(Class<T> eventType) {
-        return bus.ofType(eventType);
+        return mBus.ofType(eventType);
+    }
+
+    /**
+     * 判断是否有订阅者
+     */
+    public boolean hasObservers() {
+        return mBus.hasObservers();
+    }
+
+    public void reset() {
+        mDefaultInstance = null;
+    }
+
+    /**
+     * Stciky 相关
+     */
+
+    /**
+     * 发送一个新Sticky事件
+     */
+    public void postSticky(Object event) {
+        synchronized (mStickyEventMap) {
+            mStickyEventMap.put(event.getClass(), event);
+        }
+        post(event);
+    }
+
+    /**
+     * 根据传递的 eventType 类型返回特定类型(eventType)的 被观察者
+     */
+    public <T> Observable<T> toObservableSticky(final Class<T> eventType) {
+        synchronized (mStickyEventMap) {
+            Observable<T> observable = mBus.ofType(eventType);
+            final Object event = mStickyEventMap.get(eventType);
+
+            if (event != null) {
+                return observable.mergeWith(Observable.create(new Observable.OnSubscribe<T>() {
+                    @Override
+                    public void call(Subscriber<? super T> subscriber) {
+                        subscriber.onNext(eventType.cast(event));
+                    }
+                }));
+            } else {
+                return observable;
+            }
+        }
+    }
+
+    /**
+     * 根据eventType获取Sticky事件
+     */
+    public <T> T getStickyEvent(Class<T> eventType) {
+        synchronized (mStickyEventMap) {
+            return eventType.cast(mStickyEventMap.get(eventType));
+        }
+    }
+
+    /**
+     * 移除指定eventType的Sticky事件
+     */
+    public <T> T removeStickyEvent(Class<T> eventType) {
+        synchronized (mStickyEventMap) {
+            return eventType.cast(mStickyEventMap.remove(eventType));
+        }
+    }
+
+    /**
+     * 移除所有的Sticky事件
+     */
+    public void removeAllStickyEvents() {
+        synchronized (mStickyEventMap) {
+            mStickyEventMap.clear();
+        }
     }
 }
