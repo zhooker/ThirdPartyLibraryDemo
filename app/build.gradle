@@ -5,7 +5,7 @@ android {
         config {
             keyAlias 'Gionee'
             keyPassword '123456'
-            storeFile file('/home/zhuangsj/zhuangsj.jks')
+            storeFile file('cert.jks')
             storePassword '123456'
         }
     }
