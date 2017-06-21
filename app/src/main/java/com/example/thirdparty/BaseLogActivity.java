@@ -52,10 +52,11 @@ public class BaseLogActivity extends BaseActivity {
         this.container.addView(btn);
     }
 
-    private Button createButton() {
+    protected Button createButton() {
         Button btn = new Button(this);
         btn.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT));
+        btn.setAllCaps(false);
         btn.setLineSpacing(1.2f, 1.2f);
         btn.setPadding(5, 12, 5, 12);
         return btn;

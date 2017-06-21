@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         Button btn = new Button(this);
         btn.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT));
+        btn.setAllCaps(false);
         btn.setLineSpacing(1.2f, 1.2f);
         btn.setPadding(5, 30, 5, 30);
         return btn;
