@@ -1,6 +1,5 @@
 package com.example.thirdparty;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -8,9 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import com.example.thirdparty.permission.PermissionActivity;
-import com.example.thirdparty.retrofit.download.RetrofitDownloadActivity;
-import com.example.thirdparty.rxjava.RxJavaActivity;
+
+import com.example.thirdparty.rxjava.flowable.FlowableActivity;
 import com.example.thirdparty.rxjava.rxbus.RxBusActivity;
 import com.example.thirdparty.rxjava.rxjava2.RxJavaAPIActivity;
 
@@ -18,18 +16,14 @@ public class MainActivity extends AppCompatActivity {
 
     private static final Class<? extends BaseActivity>[] ACTIVITIES = new Class[]{
             RxJavaAPIActivity.class,
-            RxJavaActivity.class,
             RxBusActivity.class,
-            RetrofitDownloadActivity.class,
-            PermissionActivity.class
+            FlowableActivity.class
     };
 
     private static final String[] ACTIVITIE_DESC = new String[]{
-            "RxJava API Demo\nRxJava常用API使用",
-            "RxJava + Retrofit + OKHttp Demo\n使用MVP结构,网络下载列表并显示Demo",
-            "Rxjava\nRxBus　Demo",
-            "Retrofit\n使用Retrofit下载大文件Demo",
-            "RxPermission\n使用RxPermision动态检测权限"
+            "RxJava2 API Demo\nRxJava2常用API使用",
+            "Rxjava2\nRxBus　Demo",
+            "Rxjava2 \nFlowable　Demo"
     };
 
 

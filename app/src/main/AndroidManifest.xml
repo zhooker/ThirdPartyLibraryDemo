@@ -21,11 +21,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".rxjava.RxJavaActivity" />
         <activity android:name=".rxjava.rxjava2.RxJavaAPIActivity" />
-        <activity android:name=".retrofit.download.RetrofitDownloadActivity" />
         <activity android:name=".rxjava.rxbus.RxBusActivity" />
-        <activity android:name=".permission.PermissionActivity"></activity>
+        <activity android:name=".rxjava.flowable.FlowableActivity"/>
     </application>
 
 </manifest>

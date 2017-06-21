@@ -3,21 +3,23 @@ package com.example.thirdparty.rxjava.rxjava2;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
-import com.example.thirdparty.BaseActivity;
 import com.example.thirdparty.BaseLogActivity;
-import com.example.thirdparty.R;
 
 import java.util.concurrent.TimeUnit;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.functions.Func2;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
+
 
 public class RxJavaAPIActivity extends BaseLogActivity {
 
@@ -25,286 +27,127 @@ public class RxJavaAPIActivity extends BaseLogActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        addActionButton("concat", new View.OnClickListener() {
+        addActionButton("simple", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 clearProcess();
-                testConcat();
+                getObservable()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(getObserver());
             }
         });
 
-        addActionButton("amb", new View.OnClickListener() {
+        addActionButton("interval + map", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 clearProcess();
-                testAmb();
+                Observable.interval(0, 2, TimeUnit.SECONDS).range(0, 10).map(new Function<Integer, String>() {
+                    @Override
+                    public String apply(@NonNull Integer s) throws Exception {
+                        return "result="+s;
+                    }
+                }).subscribe(getObserver());
             }
         });
 
-        addActionButton("merge", new View.OnClickListener() {
+        addActionButton("Single", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 clearProcess();
-                testMerge();
-            }
-        });
-
-        addActionButton("retry/retryWhen", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clearProcess();
-                testRetry();
-            }
-        });
-
-        addActionButton("debounce", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clearProcess();
-                testDeBounce();
-            }
-        });
-    }
-
-    private void testConcat() {
-        // 按顺序执行，如果用first()只会单纯等待到第一个执行完，如果用了first(action1)　会对第一个选择性判断．
-        final Observable<String> memory = Observable.create(new Observable.OnSubscribe<String>() {
-            @Override
-            public void call(Subscriber<? super String> subscriber) {
-                updateProcess("memory　begin ... ");
-                try {
-                    Thread.sleep(2000);
-                } catch (Exception e) {
-
-                }
-                subscriber.onNext(null);
-                subscriber.onCompleted();
-            }
-        });
-        Observable<String> disk = Observable.create(new Observable.OnSubscribe<String>() {
-            @Override
-            public void call(Subscriber<? super String> subscriber) {
-                updateProcess("disk  begin ... ");
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e) {
-
-                }
-                subscriber.onNext("disk");
-                subscriber.onCompleted();
-            }
-        });
-
-        Observable<String> network = Observable.just("network");
-
-
-        Observable.concat(memory, disk, network)
-//                .first()
-                .first(new Func1<String, Boolean>() {
+                Single.just("A")
+                        .map(new Function<String, String>() {
                     @Override
-                    public Boolean call(String s) {
-                        return s != null;
+                    public String apply(@NonNull String s) throws Exception {
+                        return "result="+s;
                     }
-                })
-                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<String>() {
-            @Override
-            public void onCompleted() {
-                updateProcess("onCompleted: ");
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                updateProcess("onError: " + e);
-            }
-
-            @Override
-            public void onNext(String s) {
-                updateProcess("onNext: " + s);
-            }
-        });
-    }
-
-    private void testAmb() {
-        // 优先原则，谁先返回就一直用它的，另一个会被抛弃．
-        final Observable<String> memory = Observable.create(new Observable.OnSubscribe<String>() {
-            @Override
-            public void call(Subscriber<? super String> subscriber) {
-                for (int i = 0; i < 10; i++) {
-                    try {
-                        Thread.sleep(500);
-                    } catch (Exception e) {
-
-                    }
-                    subscriber.onNext("memory : " + i);
-                }
-                subscriber.onCompleted();
-            }
-        });
-        Observable<String> disk = Observable.create(new Observable.OnSubscribe<String>() {
-            @Override
-            public void call(Subscriber<? super String> subscriber) {
-                for (int i = 0; i < 10; i++) {
-                    try {
-                        Thread.sleep(300);
-                    } catch (Exception e) {
-
-                    }
-                    subscriber.onNext("disk : " + i);
-                }
-                subscriber.onCompleted();
-            }
-        });
-
-        Observable.amb(memory, disk)
-                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<String>() {
-            @Override
-            public void onCompleted() {
-                updateProcess("onCompleted: ");
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                updateProcess("onError: " + e);
-            }
-
-            @Override
-            public void onNext(String s) {
-                updateProcess("onNext: " + s);
-            }
-        });
-    }
-
-    private void testMerge() {
-        // 不保证输入的顺序
-        Observable.merge(
-                Observable.interval(250, TimeUnit.MILLISECONDS).map(new Func1<Long, String>() {
+                }).doOnSubscribe(new Consumer<Disposable>() {
                     @Override
-                    public String call(Long aLong) {
-                        return "First";
+                    public void accept(@NonNull Disposable disposable) throws Exception {
+                        updateProcess(" onSubscribe : " + disposable.isDisposed());
                     }
-                }),
-                Observable.interval(150, TimeUnit.MILLISECONDS).map(new Func1<Long, String>() {
+                }).subscribe(new Consumer<String>() {
                     @Override
-                    public String call(Long aLong) {
-                        return "Second";
-                    }
-                }))
-                .take(10)
-                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<String>() {
-                    @Override
-                    public void onCompleted() {
-                        updateProcess("onCompleted: ");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        updateProcess("onError: " + e);
-                    }
-
-                    @Override
-                    public void onNext(String s) {
-                        updateProcess("onNext: " + s);
+                    public void accept(@NonNull String s) throws Exception {
+                        updateProcess(s);
                     }
                 });
-
-    }
-
-    private void testRetry() {
-        // 对于retryWhen,收到onError直到onComplete才会触发．
-        Observable.create(new Observable.OnSubscribe<String>() {
-            @Override
-            public void call(Subscriber<? super String> subscriber) {
-                for (int i = 0; i < 10; i++) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (Exception e) {
-
-                    }
-                    updateProcess("create: " + i);
-                    if (i < 5)
-                        subscriber.onNext("data " + i);
-                    else
-                        subscriber.onError(new IllegalArgumentException("error " + i));
-                }
-                updateProcess("create end");
-                subscriber.onCompleted();
             }
-        }).retryWhen(new Func1<Observable<? extends Throwable>, Observable<?>>() {
+        });
+
+
+        // 按顺序发送数据
+        addActionButton("Concat", new View.OnClickListener() {
             @Override
-            public Observable<?> call(Observable<? extends Throwable> observable) {
-                return observable.zipWith(Observable.range(1, 3), new Func2<Throwable, Integer, Object>() {
-                    @Override
-                    public Object call(Throwable throwable, Integer integer) {
-                        return integer;
-                    }
-                }).delay(1, TimeUnit.SECONDS);
+            public void onClick(View v) {
+                clearProcess();
+
+                final String[] aStrings = {"A1", "A2", "A3", "A4"};
+                final String[] bStrings = {"B1", "B2", "B3"};
+
+                final Observable<String> aObservable = Observable.fromArray(aStrings);
+                final Observable<String> bObservable = Observable.fromArray(bStrings);
+
+                Observable.concat(aObservable, bObservable)
+                        .subscribe(getObserver());
             }
-        })
-                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<String>() {
-                    @Override
-                    public void onCompleted() {
-                        updateProcess("onCompleted: ");
-                    }
+        });
 
-                    @Override
-                    public void onError(Throwable e) {
-                        updateProcess("onError: " + e);
-                    }
 
-                    @Override
-                    public void onNext(String s) {
-                        updateProcess("onNext: " + s);
-                    }
-                });
-    }
-
-    private Subscription mSubscription;
-
-    private void testDeBounce() {
-        //debounce 是时间内没有新的数据就发送，和sample不一样
-//        if (mSubscription != null) {
-//            mSubscription.unsubscribe();
-//        }
-        mSubscription = Observable.create(new Observable.OnSubscribe<String>() {
+        // Merge 不保证发送的顺序
+        addActionButton("Merge", new View.OnClickListener() {
             @Override
-            public void call(Subscriber<? super String> subscriber) {
-                for (int i = 0; i < 10; i++) {
-                    try {
-                        Thread.sleep(200);
-                    } catch (Exception e) {
+            public void onClick(View v) {
+                clearProcess();
 
-                    }
-                    updateProcess("create: " + i);
-                    subscriber.onNext("data " + i);
-                }
-                updateProcess("create end " + subscriber.isUnsubscribed() + "," + Thread.currentThread().getName());
-                subscriber.onCompleted();
-            }
-        }).debounce(600, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<String>() {
-            @Override
-            public void onCompleted() {
-                updateProcess("onCompleted: ");
-            }
+                final String[] aStrings = {"A1", "A2", "A3", "A4", "A5", "A6", "A7"};
+                final String[] bStrings = {"B1", "B2", "B3"};
 
-            @Override
-            public void onError(Throwable e) {
-                updateProcess("onError: " + e);
-            }
+                final Observable<String> aObservable = Observable.fromArray(aStrings);
+                final Observable<String> bObservable = Observable.fromArray(bStrings);
 
-            @Override
-            public void onNext(String s) {
-                updateProcess("onNext: " + s);
+                Observable.merge(aObservable, bObservable)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(getObserver());
             }
         });
     }
 
-    public void onPause(View v) {
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
+    private Observable<String> getObservable() {
+        return Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(ObservableEmitter<String> e) throws Exception {
+                for (int i = 0; i < 10 && !e.isDisposed(); i++) {
+                    e.onNext("" + i);
+                }
+                e.onComplete();
+            }
+        });
     }
 
+    private Observer<String> getObserver() {
+        return new Observer<String>() {
+
+            @Override
+            public void onSubscribe(Disposable d) {
+                updateProcess(" onSubscribe : " + d.isDisposed());
+            }
+
+            @Override
+            public void onNext(String userList) {
+                updateProcess(userList);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                updateProcess(" onError : " + e.getMessage());
+            }
+
+            @Override
+            public void onComplete() {
+                updateProcess(" onComplete");
+            }
+        };
+    }
 }
