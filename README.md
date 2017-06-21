@@ -1,9 +1,3 @@
-### Third-Party Lib Demo
+### Dagger Demo
 
-+ RxJava常用API使用
-+ RxJava + Retrofit + OKHttp Demo
-+ Rxjava Demo
-+ Retrofit : 使用Retrofit下载大文件Demo
-+ HyBrid : JSInterface Demo
-+ HyBrid : JSBridge Demo
-+ RxPermission : 使用RxPermision动态检测权限
+介绍了 Dagger2 的一般使用方法，具体可以参考[Android Dagger依赖注入框架浅析](http://blog.csdn.net/ljphhj/article/details/37663071?utm_source=tuicool&utm_medium=referral)

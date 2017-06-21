@@ -1,4 +1,3 @@
 <resources>
-    <string name="app_name">ThirdPartyLibraryDemo</string>
-    <string name="title_activity_rx_bus">RxBusActivity</string>
+    <string name="app_name">DaggerDemo</string>
 </resources>
