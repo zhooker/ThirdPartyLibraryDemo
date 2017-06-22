@@ -15,3 +15,5 @@
     + Dagger2 测试代码
 + rxjava2
     + 关于使用Rxjava2的一些例子，包括Observable、Flowable、RxBus
++ databinding
+    + 使用DataBinding 实现的多任务栏下载例子
