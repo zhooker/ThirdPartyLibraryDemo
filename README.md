@@ -12,4 +12,6 @@
     + HyBrid : JSInterface Demo
     + HyBrid : JSBridge Demo
 + dagger
-    Dagger2 测试代码
+    + Dagger2 测试代码
++ rxjava2
+    + 关于使用Rxjava2的一些例子，包括Observable、Flowable、RxBus
