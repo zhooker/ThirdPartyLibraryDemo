@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String[] ACTIVITIE_DESC = new String[]{
             "RxJava2 API Demo\nRxJava2常用API使用",
-            "Rxjava2\nRxBus　Demo",
+            "Rxjava2\n RxBus　Demo",
             "Rxjava2 \nFlowable　Demo"
     };
 
