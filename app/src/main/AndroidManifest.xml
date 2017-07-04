@@ -24,6 +24,7 @@
         <activity android:name=".rxjava.RxJavaActivity" />
         <activity android:name=".rxjava.rxjava2.RxJavaAPIActivity" />
         <activity android:name=".retrofit.download.RetrofitDownloadActivity" />
+        <activity android:name=".retrofit.cache.RetrofitCacheActivity" />
         <activity android:name=".rxjava.rxbus.RxBusActivity" />
         <activity android:name=".permission.PermissionActivity"></activity>
     </application>

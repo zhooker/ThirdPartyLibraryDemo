@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import com.example.thirdparty.permission.PermissionActivity;
+import com.example.thirdparty.retrofit.cache.RetrofitCacheActivity;
 import com.example.thirdparty.retrofit.download.RetrofitDownloadActivity;
 import com.example.thirdparty.rxjava.RxJavaActivity;
 import com.example.thirdparty.rxjava.rxbus.RxBusActivity;
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
             RxJavaActivity.class,
             RxBusActivity.class,
             RetrofitDownloadActivity.class,
+            RetrofitCacheActivity.class,
             PermissionActivity.class
     };
 
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
             "RxJava + Retrofit + OKHttp Demo\n使用MVP结构,网络下载列表并显示Demo",
             "Rxjava\nRxBus　Demo",
             "Retrofit\n使用Retrofit下载大文件Demo",
+            "Retrofit\nRetrofit使用缓存的Demo",
             "RxPermission\n使用RxPermision动态检测权限"
     };
 
