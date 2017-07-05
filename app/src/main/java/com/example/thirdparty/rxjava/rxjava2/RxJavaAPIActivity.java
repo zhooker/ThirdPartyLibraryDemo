@@ -5,12 +5,15 @@ import android.util.Log;
 import android.view.View;
 
 import com.example.thirdparty.BaseLogActivity;
+import com.example.thirdparty.R;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -110,6 +113,53 @@ public class RxJavaAPIActivity extends BaseLogActivity {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(getObserver());
+            }
+        });
+
+        addActionButton("retryWhen", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearProcess();
+                /**
+                 * retryWhen 里的函数只创建一次，返回的Obserable会注册inner , 每次收到onError就会向这个Obserable发送onNext，
+                 * 最后传递给inner，inner再决定要不要续定。
+                 */
+                Single someObservable = Observable
+                        .fromIterable(Arrays.asList(new Integer[]{2, 3, 5, 7, 11, 8, 18}))
+                        .doOnNext(result -> updateProcess(" doOnNext1 " + result))
+                        .filter(prime -> prime % 2 == 0)
+                        .doOnNext(result -> updateProcess(" doOnNext2 " + result))
+                        .count();
+
+                Observable mObservable = Observable.create(new ObservableOnSubscribe<String>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<String> e) throws Exception {
+                        for (int i = 0; i < 10; i++) {
+                            e.onNext("" + i);
+                            if(i == 8)
+                                e.onError(new Exception("not support"));
+                        }
+                        e.onComplete();
+                    }
+                }).doOnError(new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        updateProcess("doOnError ..." + throwable.getMessage());
+                    }
+                }).retryWhen(attempts -> {
+                    updateProcess("retryWhen create ...");
+                    return attempts.zipWith(Observable.range(1, 3), (n, i) -> i).flatMap(new Function<Integer, ObservableSource<?>>() {
+                        @Override
+                        public ObservableSource<?> apply(@NonNull Integer integer) throws Exception {
+                            updateProcess("delay retry by " + integer + " second(s)");
+                            if(integer >= 3)
+                                return Observable.error(new IllegalArgumentException("not support 3"));
+                            return Observable.timer(integer, TimeUnit.SECONDS);
+                        }
+                    });
+                });
+
+                mObservable.subscribe(getObserver());//result -> updateProcess(" result " + result),error -> updateProcess(" error " + error));
             }
         });
     }
