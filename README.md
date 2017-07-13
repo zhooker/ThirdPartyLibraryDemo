@@ -1,3 +1,3 @@
-### Third-Party Lib Demo
+### GankNews Client
 
-关于使用 RxJava2 的一些例子，包括 RxBus , Flowable , Observable 。
+使用 Kotlin 、Dagger、Rxjava2、Retrofit2 实现的GankNews 简单客户端。
