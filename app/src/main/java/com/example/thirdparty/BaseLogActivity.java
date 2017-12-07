@@ -61,4 +61,15 @@ public class BaseLogActivity extends BaseActivity {
         btn.setPadding(5, 12, 5, 12);
         return btn;
     }
+
+    protected void insertSort(int[] a) {
+        for (int i = 1; i < a.length; i++) {
+            int temp = a[i];
+            int j = i;
+            for (; j > 0 && a[j - 1] > temp; j--) {
+                a[j] = a[j - 1];
+            }
+            a[j] = temp;
+        }
+    }
 }

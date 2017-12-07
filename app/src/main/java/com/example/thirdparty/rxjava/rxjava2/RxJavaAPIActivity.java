@@ -1,5 +1,7 @@
 package com.example.thirdparty.rxjava.rxjava2;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -8,6 +10,7 @@ import android.widget.TextView;
 import com.example.thirdparty.BaseActivity;
 import com.example.thirdparty.BaseLogActivity;
 import com.example.thirdparty.R;
+import com.example.thirdparty.rxjava.RxJavaActivity;
 
 import java.util.concurrent.TimeUnit;
 
@@ -29,16 +32,22 @@ public class RxJavaAPIActivity extends BaseLogActivity {
         addActionButton("concat", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clearProcess();
-                testConcat();
+//                clearProcess();
+//                testConcat();
+                Intent intent = new Intent();
+                intent.setAction("android.intent.action.VIEW");
+                Uri content_url = Uri.parse("http://play.jb51.net");
+                intent.setData(content_url);
+                startActivity(intent);
             }
         });
 
         addActionButton("amb", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clearProcess();
-                testAmb();
+//                clearProcess();
+//                testAmb();
+                goToActivity(RxJavaActivity.class,"test");
             }
         });
 

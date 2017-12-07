@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
-            <intent-filter>
+           <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -26,7 +26,15 @@
         <activity android:name=".retrofit.download.RetrofitDownloadActivity" />
         <activity android:name=".retrofit.cache.RetrofitCacheActivity" />
         <activity android:name=".rxjava.rxbus.RxBusActivity" />
-        <activity android:name=".permission.PermissionActivity"></activity>
+        <activity android:name=".permission.PermissionActivity" />
+        <activity android:name=".animation.HardwareAnimationActivity" />
+        <activity android:name=".RecyclerActivity">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
     </application>
 
 </manifest>
